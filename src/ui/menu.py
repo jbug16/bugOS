@@ -9,12 +9,13 @@ def _format_label(route_key: str) -> str:
     return route_key.replace("_", " ").title()
 
 class Menu:
-    def __init__(self, items, font, *, x=16, y=92, width=208,
+    def __init__(self, items, font, *, values=None, x=16, y=92, width=208,
                  row_height=35, card_height=30):
         if not items:
             raise ValueError("Menu needs at least one item")
         self.items = list(items)
         self.font = font
+        self.values = values
         self.selected = 0
 
         self.x = x
@@ -54,3 +55,10 @@ class Menu:
             )
             label = self.font.render(_format_label(item), True, fg)
             surface.blit(label, (self.x + 14, row_y + 6))
+
+            if self.values and item in self.values:
+                pct = self.font.render(f"{self.values[item]}%", True, fg)
+                surface.blit(
+                    pct,
+                    (self.x + self.width - 14 - pct.get_width(), row_y + 6),
+                )

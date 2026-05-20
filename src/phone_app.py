@@ -2,6 +2,7 @@ import pygame
 
 from .input import InputManager, Action
 from .navigation import ScreenRouter
+from .settings_store import SettingsStore
 from .screens.home_screen import HomeScreen
 from .screens.settings_screen import SettingsScreen
 
@@ -24,14 +25,16 @@ class PhoneApp:
             "small": pygame.font.SysFont("arial", 14),
         }
 
-        # Input + screen navigation
+        self.settings = SettingsStore()
         self.input = InputManager()
         self.router = ScreenRouter()
         self._register_screens()
 
     def _register_screens(self):
         self.router.register("home", HomeScreen(self.fonts))
-        self.router.register("settings", SettingsScreen(self.fonts))
+        self.router.register(
+            "settings", SettingsScreen(self.fonts, self.settings)
+        )
         self.router.go_to("home")
 
     def run(self):
