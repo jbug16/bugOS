@@ -25,7 +25,9 @@ class ScreenRouter:
         if self._current is not None and self._current != name:
             self._history.append(self._current)
         self._current = name
-        self.current.menu.selected = 0 # make sure first item is selected
+        menu = getattr(self.current, "menu", None)
+        if menu is not None:
+            menu.reset_selection()
 
     def go_back(self):
         if self._history:
