@@ -1,8 +1,9 @@
 import json
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULTS = {"volume": 70, "brightness": 80}
-SETTINGS_PATH = Path(__file__).resolve().parent.parent / "data/settings.json"
+SETTINGS_PATH = ROOT / "data" / "settings.json"
 
 
 def _clamp(value):
@@ -26,6 +27,7 @@ class SettingsStore:
             pass
 
     def save(self):
+        SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
         try:
             SETTINGS_PATH.write_text(
                 json.dumps(self.values, indent=2) + "\n"

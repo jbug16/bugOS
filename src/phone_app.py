@@ -1,12 +1,15 @@
 import pygame
 
+from .call import CallManager
 from .input import InputManager, Action
 from .navigation import ScreenRouter
 from .screens.incoming_call_screen import IncomingCallScreen
 from .screens.ongoing_call_screen import OngoingCallScreen
-from .settings_store import SettingsStore
+from .screens.outgoing_call_screen import OutgoingCallScreen
+from .data_storing import SettingsStore
 from .screens.home_screen import HomeScreen
 from .screens.settings_screen import SettingsScreen
+
 
 class PhoneApp:
     WIDTH = 320
@@ -15,12 +18,12 @@ class PhoneApp:
 
     def __init__(self):
         pygame.init()
+        pygame.mixer.init()
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("bugOS")
         self.clock = pygame.time.Clock()
         self.running = True
 
-        # Shared fonts so every screen has the same typography.
         self.fonts = {
             "large": pygame.font.SysFont("arial", 24, bold=True),
             "medium": pygame.font.SysFont("arial", 18),
@@ -31,21 +34,18 @@ class PhoneApp:
         self.input = InputManager()
         self.router = ScreenRouter()
         self._register_screens()
+        self.calls = CallManager(self.router, settings=self.settings)
+        self.router.call = self.calls
+
+        # test call
+        self.calls.start_incoming(2398982770)
 
     def _register_screens(self):
         self.router.register("home", HomeScreen(self.fonts))
-        self.router.register(
-            "settings", SettingsScreen(self.fonts, self.settings)
-        )
-        self.router.register(
-            "incoming_call",
-            IncomingCallScreen(self.fonts, contact_id="john_pork"),
-        )
-        self.router.register(
-            "ongoing_call",
-            OngoingCallScreen(self.fonts, contact_id="john_pork"),
-        )
-        self.router.go_to("incoming_call")
+        self.router.register("settings", SettingsScreen(self.fonts, self.settings))
+        self.router.register("incoming_call", IncomingCallScreen(self.fonts))
+        self.router.register("ongoing_call", OngoingCallScreen(self.fonts))
+        self.router.register("outgoing_call", OutgoingCallScreen(self.fonts))
 
     def run(self):
         while self.running:
@@ -59,4 +59,5 @@ class PhoneApp:
             pygame.display.flip()
             self.clock.tick(self.FPS)
 
+        self.calls.shutdown()
         pygame.quit()

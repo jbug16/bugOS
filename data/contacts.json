@@ -1,1 +1,12 @@
-[]
+{
+  "john_pork": {
+    "name": "John Pork",
+    "number": 12345678,
+    "photo": "john_pork.jpg"
+  },
+  "bella_lanese": {
+    "name": "Bella Lanese",
+    "number": 12050430,
+    "photo": "unknown.jpg"
+  }
+}
