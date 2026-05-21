@@ -3,6 +3,7 @@ import pygame
 from .input import InputManager, Action
 from .navigation import ScreenRouter
 from .screens.incoming_call_screen import IncomingCallScreen
+from .screens.ongoing_call_screen import OngoingCallScreen
 from .settings_store import SettingsStore
 from .screens.home_screen import HomeScreen
 from .screens.settings_screen import SettingsScreen
@@ -39,6 +40,10 @@ class PhoneApp:
         self.router.register(
             "incoming_call",
             IncomingCallScreen(self.fonts, contact_id="john_pork"),
+        )
+        self.router.register(
+            "ongoing_call",
+            OngoingCallScreen(self.fonts, contact_id="john_pork"),
         )
         self.router.go_to("incoming_call")
 
