@@ -3,6 +3,8 @@ import pygame
 from .call import CallManager
 from .input import InputManager, Action
 from .navigation import ScreenRouter
+from .screens import MsgScreen
+from .screens.call_screen import CallScreen
 from .screens.incoming_call_screen import IncomingCallScreen
 from .screens.ongoing_call_screen import OngoingCallScreen
 from .screens.outgoing_call_screen import OutgoingCallScreen
@@ -37,11 +39,10 @@ class PhoneApp:
         self.calls = CallManager(self.router, settings=self.settings)
         self.router.call = self.calls
 
-        # test call
-        self.calls.start_incoming(2398982770)
-
     def _register_screens(self):
         self.router.register("home", HomeScreen(self.fonts))
+        self.router.register("call", CallScreen(self.fonts))
+        self.router.register("messages", MsgScreen(self.fonts))
         self.router.register("settings", SettingsScreen(self.fonts, self.settings))
         self.router.register("incoming_call", IncomingCallScreen(self.fonts))
         self.router.register("ongoing_call", OngoingCallScreen(self.fonts))
@@ -54,6 +55,8 @@ class PhoneApp:
                     self.running = False
                 else:
                     self.router.handle(action)
+
+            self.calls.update()
 
             self.router.draw(self.screen)
             pygame.display.flip()

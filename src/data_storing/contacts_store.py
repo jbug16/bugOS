@@ -46,10 +46,40 @@ def _load_contacts():
     _contacts = loaded
 
 
+def format_e164(number):
+    """Format a stored number for Twilio (E.164, e.g. +12345678901)."""
+    digits = "".join(c for c in str(number) if c.isdigit())
+    if not digits:
+        return None
+    if len(digits) == 10:
+        return f"+1{digits}"
+    if len(digits) == 11 and digits[0] == "1":
+        return f"+{digits}"
+    return f"+{digits}"
+
+
 def get_contact(contact_id):
     if not _contacts:
         _load_contacts()
     return _contacts.get(contact_id)
+
+
+def list_contact_ids(*, skip_ids=("unknown",)):
+    """Return sorted contact ids for menus (excludes placeholder entries)."""
+    if not _contacts:
+        _load_contacts()
+    return sorted(
+        (cid for cid in _contacts if cid not in skip_ids),
+        key=str.casefold,
+    )
+
+
+def get_contact_phone_e164(contact_id):
+    """Return E.164 phone string for a contact id, or None if missing."""
+    contact = get_contact(contact_id)
+    if not contact:
+        return None
+    return format_e164(contact.get("number"))
 
 
 def get_contact_by_number(number):
@@ -69,6 +99,19 @@ def get_contact_by_number(number):
             return entry
     return None
 
+def get_contact_by_name(name):
+    """Return contact id if display name matches, else None."""
+    if not _contacts:
+        _load_contacts()
+    if not name or not str(name).strip():
+        return None
+
+    query = str(name).strip().casefold()
+    for contact_id, entry in _contacts.items():
+        stored_name = entry.get("name")
+        if stored_name and stored_name.casefold() == query:
+            return contact_id
+    return None
 
 def load_contact_into(screen, contact_id):
     """Update a call screen's name and photo from a contact id or phone number."""

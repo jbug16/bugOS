@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 data/settings.json
 .DS_STORE
+.env

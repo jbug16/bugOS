@@ -1,2 +1,4 @@
 pygame
 gpiozero
+twilio
+python-dotenv
